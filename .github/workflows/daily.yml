@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_PUSH }}   # push commits as you, so they count on your graph
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -20,3 +22,10 @@ jobs:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT: ${{ secrets.TELEGRAM_CHAT }}
         run: python check_email.py
+      - name: Commit daily log
+        run: |
+          git config user.name "Nathan Lee"
+          git config user.email "274642347+nathannllee-ship-it@users.noreply.github.com"
+          git add history.md
+          git commit -m "log: $(date -u +%Y-%m-%d) email check" || { echo "nothing to commit"; exit 0; }
+          git push

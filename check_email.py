@@ -94,6 +94,16 @@ def build_message(counts):
     return "\n".join(lines)
 
 
+def append_history(msg):
+    """Append a dated entry to history.md (CI only) so each run is a commit."""
+    import datetime
+    stamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+    line = f"- **{stamp}** — " + msg.replace("\n", " · ")
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "history.md")
+    with open(path, "a") as f:
+        f.write(line + "\n")
+
+
 def send_telegram(text):
     data = urllib.parse.urlencode({"chat_id": TELEGRAM_CHAT, "text": text}).encode()
     req = urllib.request.Request(
@@ -117,6 +127,8 @@ def main():
     msg = build_message(counts)
     print("---\n" + msg + "\n---")
     send_telegram(msg)
+    if os.environ.get("GITHUB_ACTIONS"):
+        append_history(msg)
 
 
 if __name__ == "__main__":
