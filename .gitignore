@@ -1,0 +1,6 @@
+# Secrets — these live in GitHub repo secrets, never commit them
+token.json
+client_secret*.json
+
+__pycache__/
+*.pyc
